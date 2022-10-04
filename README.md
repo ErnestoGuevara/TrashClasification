@@ -6,7 +6,7 @@ The solution that is proposed is to make a smart garbage can that can be used by
 ## How to run 
 First of all you have to clone the project: 
 ```
-git clone (link)
+git clone https://github.com/ErnestoGuevara/TrashClasification.git
 ```
 Then you have to download the imgTransform folder from: https://drive.google.com/drive/folders/1Quzi-nfAZaTQA4JxVl7mEAshsHSJtAEK?usp=sharing 
 
