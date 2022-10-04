@@ -30,9 +30,9 @@ def load_arguments(args):
       test_image:           the input image that should be tested by the model.
     """
     test_image = plt.imread(args["image"])
-    plt.figure()
-    plt.imshow(test_image)
-    plt.show()
+    #plt.figure()
+    #plt.imshow(test_image)
+    #plt.show()
 
     return test_image
 
@@ -181,7 +181,7 @@ def main(args):
     """
 
     # Define dataset directory
-    data_dir = "data/Garbage classification"
+    data_dir = "data/Garbage_classification"
 
     # Finding dataset properties
     class_names = class_names_fun(data_dir)
@@ -277,13 +277,13 @@ def main(args):
             f"Test prediction: {prediction} -> Class: {class_names[prediction]}")
 
         # Plot the image with the predicted class
-        plt.figure()
-        plt.axis('off')
-        plt.title(class_names[prediction], fontsize=10)
-        plt.imshow(test_image)
-        plt.suptitle('Image Classification', fontsize=18)
-        plt.savefig('images/Image_Classification')
-        plt.show()
+        #plt.figure()
+        #plt.axis('off')
+        #plt.title(class_names[prediction], fontsize=10)
+        #plt.imshow(test_image)
+        #plt.suptitle('Image Classification', fontsize=18)
+        #plt.savefig('images/Image_Classification')
+        #plt.show()
 
 
 if __name__ == "__main__":
