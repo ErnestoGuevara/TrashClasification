@@ -15,7 +15,7 @@ from torchvision import models
 from load_data import load_dataset
 from read_data import ReadDataset
 from run_model import run_model, predict
-from cnn import BaselineNet, ResNet
+from cnn import ResNet
 
 
 def load_arguments(args):
