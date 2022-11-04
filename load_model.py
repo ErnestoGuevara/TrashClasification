@@ -4,10 +4,26 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 import time
+from time import sleep
+import RPi.GPIO as GPIO
 
+servoPIN = 4
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servoPIN, GPIO.OUT)
+pwm=GPIO.PWM(servoPIN, 50)
+pwm.start(0)
+def SetAngle(angle):
+	duty = angle / 18 + 2
+	GPIO.output(servoPIN, True)
+	pwm.ChangeDutyCycle(duty)
+	sleep(1)
+	GPIO.output(servoPIN, False)
+	pwm.ChangeDutyCycle(0)
+SetAngle(0)
 # Recrea exactamente el mismo modelo
 
-new_model = keras.models.load_model('/Users/ernestoguevara/Desktop/Trash_clasification/content/carpeta_salida/modelo_basura/1')
+new_model = keras.models.load_model('/home/robotics/Desktop/TrashClasification/content/carpeta_salida/modelo_basura/1')
 # Verifique que el estado esté guardado
 
 def categorize(dir):
@@ -55,16 +71,32 @@ while True:
         img_counter += 1
         if img_counter == 1:
           break
-    
-direc = '/Users/ernestoguevara/Desktop/trash_clasification/lata1.jpeg'
+
+direc = '/home/robotics/Desktop/TrashClasification/plastic6.jpg'
 cam.release()
 cv2.destroyAllWindows()
 prediccion = categorize(direc)
 if(prediccion == 0):
   print("Metal")
+  SetAngle(50) 
+ 
+
 if(prediccion == 1):
   print("Plastic")
+  SetAngle(100) 
+  #Add time to set angle in 0
+ 
+  
+
 if(prediccion == 2):
   print("Glass")
+  SetAngle(150) 
+  
 if(prediccion == 3):
   print("Other")
+
+time.sleep(5)
+SetAngle(0)
+print("hola")
+pwm.stop()
+GPIO.cleanup()
