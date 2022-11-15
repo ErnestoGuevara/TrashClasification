@@ -7,22 +7,62 @@ import time
 from time import sleep
 import RPi.GPIO as GPIO
 
-servoPIN = 4
+servoMiddlePIN = 4
+servoGripper = 27
+servoTapa = 22
+sensor = 5
+
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(servoPIN, GPIO.OUT)
-pwm=GPIO.PWM(servoPIN, 50)
-pwm.start(0)
-def SetAngle(angle):
-	duty = angle / 18 + 2
-	GPIO.output(servoPIN, True)
-	pwm.ChangeDutyCycle(duty)
-	sleep(1)
-	GPIO.output(servoPIN, False)
-	pwm.ChangeDutyCycle(0)
-SetAngle(0)
-# Recrea exactamente el mismo modelo
+GPIO.setwarnings(False)
+#Setup of Servo Outputs and sensor input
+GPIO.setup(servoGripper,GPIO.OUT)
+GPIO.setup(servoMiddlePIN, GPIO.OUT)
+GPIO.setup(servoTapa, GPIO.OUT)
+GPIO.setup(sensor, GPIO.IN)
+pwmMiddle = GPIO.PWM(servoMiddlePIN, 50)
+pwmGripper = GPIO.PWM(servoGripper, 50)
+pwmTapa = GPIO.PWM(servoTapa,50)
 
+pwmMiddle.start(0)
+pwmGripper.start(0)
+pwmTapa.start(0)
+def SetAngleMiddle(angle):
+	duty = angle / 18 + 2
+	GPIO.output(servoMiddlePIN, True)
+	pwmMiddle.ChangeDutyCycle(duty)
+	sleep(0.5)
+	GPIO.output(servoMiddlePIN, False)
+	pwmMiddle.ChangeDutyCycle(0)
+def SetAngleGripper(angle):
+    duty = angle / 18 + 2
+    GPIO.output(servoGripper,True)
+    pwmGripper.ChangeDutyCycle(duty)
+    sleep(1)
+    GPIO.output(servoGripper, False)
+    pwmGripper.ChangeDutyCycle(0)
+def SetAngleTapa(angle):
+    duty = angle / 18 + 2
+    GPIO.output(servoTapa,True)
+    pwmTapa.ChangeDutyCycle(duty)
+    sleep(1)
+    GPIO.output(servoTapa,False)
+    pwmTapa.ChangeDutyCycle(0)
+
+SetAngleMiddle(0)
+
+while True: 
+    if GPIO.input(sensor):
+        print("Nothing detected")
+        while GPIO.input(sensor):
+            time.sleep(0.2)
+    else:
+        print("Detected")
+        SetAngleMiddle(150)
+        #pwmGripper.stop()
+        
+            
+# Recrea exactamente el mismo modelo
 new_model = keras.models.load_model('/home/robotics/Desktop/TrashClasification/content/carpeta_salida/modelo_basura/1')
 # Verifique que el estado esté guardado
 
@@ -56,14 +96,14 @@ cam = cv2.VideoCapture(0)
 while True:
     check, frame = cam.read()
 
-    cv2.imshow('video', frame)
+    #cv2.imshow('video', frame)
 
     key = cv2.waitKey(1)
     if key%256 == 27:
         # ESC pressed
         print("Escape hit, closing...")
         break
-    if time.time() - start_time >= 5: #<---- Check if 5 sec passed
+    if time.time() - start_time >= 0.5: #<---- Check if 5 sec passed
         img_name = "opencv_frame_{}.jpg".format(img_counter)
         cv2.imwrite(img_name, frame)
         print("{} written!".format(img_name))
@@ -72,31 +112,31 @@ while True:
         if img_counter == 1:
           break
 
-direc = '/home/robotics/Desktop/TrashClasification/plastic6.jpg'
+direc = '/home/robotics/Desktop/TrashClasification/opencv_frame_0.jpg'
 cam.release()
 cv2.destroyAllWindows()
 prediccion = categorize(direc)
 if(prediccion == 0):
   print("Metal")
-  SetAngle(50) 
- 
+  SetAngleMiddle(50) 
+
 
 if(prediccion == 1):
   print("Plastic")
-  SetAngle(100) 
+  SetAngleMiddle(150) 
   #Add time to set angle in 0
  
   
 
 if(prediccion == 2):
   print("Glass")
-  SetAngle(150) 
+  SetAngleMiddle(0) 
   
 if(prediccion == 3):
   print("Other")
 
 time.sleep(5)
-SetAngle(0)
-print("hola")
-pwm.stop()
+SetAngleMiddle(0)
+#print("hola")
+pwmMiddle.stop()
 GPIO.cleanup()
